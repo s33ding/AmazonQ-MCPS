@@ -69,13 +69,10 @@ cd docker-img
 
 Deploy to Amazon EKS cluster:
 ```bash
-./deploy.sh
+cd docker-img
+./build.sh
+kubectl apply -f ../eks-deployment/
 ```
-
-This script:
-- Creates ECR repository
-- Builds and pushes Docker image
-- Deploys to EKS using Kubernetes manifests
 
 ### Terraform Infrastructure
 
@@ -102,10 +99,22 @@ The `buildspec.yml` defines an AWS CodeBuild pipeline that syncs MCP files to S3
 ├── mcp/                    # MCP server implementation
 │   ├── simple_mcp_server.py
 │   ├── setup_mcp.py
+│   ├── test_mcp.py
 │   └── requirements.txt
 ├── docker-img/             # Docker configuration
+│   ├── Dockerfile
+│   ├── build.sh
+│   ├── simple_mcp_server.py
+│   ├── setup_mcp.py
+│   ├── test_mcp.py
+│   └── requirements.txt
 ├── eks-deployment/         # Kubernetes manifests
+│   ├── deployment.yaml
+│   └── service.yaml
 ├── terraform/              # Infrastructure as code
+│   ├── main.tf
+│   └── outputs.tf
 ├── buildspec.yml          # CI/CD pipeline
-└── deploy.sh              # Deployment automation
+├── sync-to-s3.sh          # S3 sync script
+└── .gitignore             # Git ignore rules
 ```
