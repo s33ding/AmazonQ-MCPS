@@ -61,17 +61,15 @@ Configure Amazon Q by creating `~/.aws/amazonq/mcpAdmin/servers.json`
 
 Build and run containerized MCP server:
 ```bash
-cd docker-img
-./build.sh
+./docker-img/build.sh
 ```
 
 ### EKS Deployment
 
 Deploy to Amazon EKS cluster:
 ```bash
-cd docker-img
-./build.sh
-kubectl apply -f ../eks-deployment/
+./docker-img/build.sh
+kubectl apply -f eks-deployment/
 ```
 
 ### Terraform Infrastructure
