@@ -1,46 +1,111 @@
 # AmazonQ-MCPS
-This repository is dedicated to the development of the Machine Learning and Cognitive Processing System (MCPS) for Amazon Q. It focuses on building advanced AI models and systems that enhance cognitive capabilities, streamline decision-making, and optimize data processing for Amazon Q, leveraging cutting-edge techniques in machine learning and AI.
+This repository provides a comprehensive Model Context Protocol (MCP) server implementation for Amazon Q, featuring multiple deployment options from local development to production-ready cloud infrastructure.
 
 ## MCP Architecture
 
-Model Context Protocol (MCP) enables AI assistants to connect with external tools and data sources. This simple architecture allows extending AI capabilities through standardized communication.
+Model Context Protocol (MCP) enables AI assistants to connect with external tools and data sources through standardized communication.
 
-### How it Works
+### Architecture Overview
 
 ```
-┌─────────────────┐    MCP Protocol    ┌─────────────────┐
-│                 │ ◄─────────────────► │                 │
-│   AI Assistant  │                    │   MCP Server    │
-│   (Amazon Q)    │                    │  (Your Tools)   │
-│                 │                    │                 │
-└─────────────────┘                    └─────────────────┘
+┌─────────────────┐    MCP Protocol    ┌─────────────────┐    Cloud Infrastructure
+│                 │ ◄─────────────────► │                 │    ┌─────────────────┐
+│   Amazon Q      │                    │   MCP Server    │ ◄──┤ EKS/ECR/S3      │
+│   CLI Client    │                    │   (Python)      │    │ Terraform       │
+│                 │                    │                 │    │ CI/CD Pipeline  │
+└─────────────────┘                    └─────────────────┘    └─────────────────┘
 ```
 
 ### Components
 
-- **AI Assistant**: Amazon Q or other MCP-compatible clients
-- **MCP Server**: Your Python server that provides tools
-- **Protocol**: JSON-RPC communication over stdin/stdout
+- **Amazon Q CLI**: MCP-compatible AI assistant client
+- **MCP Server**: Python server providing custom tools via JSON-RPC over stdin/stdout
+- **Cloud Infrastructure**: Containerized deployment on AWS EKS with ECR and S3
+- **CI/CD Pipeline**: Automated build and deployment using AWS CodeBuild
 
-### Simple Example
+## Quick Start
 
-Our MCP server provides a "greet" tool:
-
-1. AI Assistant asks: "What tools are available?"
-2. MCP Server responds: "I have a 'greet' tool"
-3. AI Assistant calls: `greet(name="Roberto")`
-4. MCP Server returns: "Hello, Roberto! Welcome to MCP."
-
-## Getting Started
+### Local Development
 
 1. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   cd mcp && pip install -r requirements.txt
    ```
 
-2. Run the MCP server:
+2. Configure MCP server for Amazon Q:
    ```bash
-   python simple_mcp_server.py
+   python mcp/setup_mcp.py
    ```
 
-3. The server communicates via stdin/stdout with MCP clients like Amazon Q.
+3. Start Amazon Q CLI:
+   ```bash
+   q chat
+   ```
+
+4. Test the MCP server:
+   - Ask: "What tools are available?"
+   - Try: "Use the greet tool with Roberto"
+
+### Manual Setup
+
+Run the MCP server directly:
+```bash
+python mcp/simple_mcp_server.py
+```
+
+Configure Amazon Q by creating `~/.aws/amazonq/mcpAdmin/servers.json`
+
+## Deployment Options
+
+### Docker Deployment
+
+Build and run containerized MCP server:
+```bash
+cd docker-img
+./build.sh
+```
+
+### EKS Deployment
+
+Deploy to Amazon EKS cluster:
+```bash
+./deploy.sh
+```
+
+This script:
+- Creates ECR repository
+- Builds and pushes Docker image
+- Deploys to EKS using Kubernetes manifests
+
+### Terraform Infrastructure
+
+Provision AWS resources:
+```bash
+cd terraform
+terraform init
+terraform plan
+terraform apply
+```
+
+Creates:
+- ECR repository for container images
+- S3 bucket for MCP files synchronization
+- IAM roles and policies
+
+### S3 Sync Pipeline
+
+The `buildspec.yml` defines an AWS CodeBuild pipeline that syncs MCP files to S3 for distribution and backup.
+
+## Project Structure
+
+```
+├── mcp/                    # MCP server implementation
+│   ├── simple_mcp_server.py
+│   ├── setup_mcp.py
+│   └── requirements.txt
+├── docker-img/             # Docker configuration
+├── eks-deployment/         # Kubernetes manifests
+├── terraform/              # Infrastructure as code
+├── buildspec.yml          # CI/CD pipeline
+└── deploy.sh              # Deployment automation
+```
