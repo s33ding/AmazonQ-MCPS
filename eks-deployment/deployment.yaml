@@ -13,9 +13,11 @@ spec:
       labels:
         app: mcp-server
     spec:
+      serviceAccountName: mcp-server-sa
       containers:
       - name: mcp-server
-        image: <account-id>.dkr.ecr.us-east-1.amazonaws.com/mcp-server:latest
+        image: 248189947068.dkr.ecr.us-east-1.amazonaws.com/mcp-server:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         resources:
