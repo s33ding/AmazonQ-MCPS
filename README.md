@@ -69,7 +69,8 @@ Build and run containerized MCP server:
 Deploy to Amazon EKS cluster:
 ```bash
 ./docker-img/build.sh
-kubectl apply -f eks-deployment/
+cd eks-deployment
+kubectl apply -f .
 ```
 
 ### Terraform Infrastructure
